@@ -1,23 +1,26 @@
 <template>
     <div id="app">
         <h1>Список задач</h1>
-        <input type="text" v-model="newTask">
+        <input  type="text" v-model="newTask" >
         <button @click="addNewTask">Добавить</button>
-        <List 
-        :taskList="taskList" 
-        :changeTaskCompleted="changeTaskCompleted"
-        :deleteTask="deleteTask"
-        />
+        <ul>
+            <TodoItem 
+                v-for="task in taskList" 
+                :key="task.id"
+                :task="task"
+            />                
+        </ul>
     </div>
 </template>
 
 <script>
-    import List from './components/List';
+    import TodoItem from './components/TodoItem';
+    import {bus} from './main';
 
     export default {
         name: 'App',
         components: {
-            List,
+            TodoItem,
         },
         data() {
             return {
@@ -44,7 +47,11 @@
             deleteTask: function(id) {
                 this.taskList = this.taskList.filter(item => item.id !== id);
             }
-        }
+        },
+        created() {
+            bus.$on('delete-task', this.deleteTask);
+            bus.$on('task-status', this.changeTaskCompleted)
+        },
     }
 </script>
 
